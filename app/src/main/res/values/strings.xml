@@ -3,7 +3,7 @@
     <string name="badaarberg">Schwimmbad Aarber (BE)</string>
     <string name="badadelboden">Schwimbad Gruebi Adelboden (BE)</string>
     <string name="badbern">Statberner Baeder Bern (BE)</string>
-
+    <string name="search_hint">suche</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
