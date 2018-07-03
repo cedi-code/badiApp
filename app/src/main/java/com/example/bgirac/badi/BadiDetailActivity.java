@@ -2,6 +2,7 @@ package com.example.bgirac.badi;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.location.Location;
 import android.os.AsyncTask;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AppCompatActivity;
@@ -15,6 +16,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
@@ -33,6 +35,7 @@ public class BadiDetailActivity extends FragmentActivity implements OnMapReadyCa
     private String badiId;
     private String name;
     private ProgressDialog mDialog;
+    ArrayAdapter badiliste;
 
     private GoogleMap mMap;
     @Override
@@ -60,10 +63,31 @@ public class BadiDetailActivity extends FragmentActivity implements OnMapReadyCa
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
+        badiliste = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1);
+        final ArrayList<ArrayList<String>> allBadis = BadiData.allBadis(getApplicationContext());
+
+        double v = 0;
+        double v1 = 0;
+
+        for(ArrayList<String> b: allBadis) {
+            if(badiId.equals(b.get(0))) {
+                v = Double.parseDouble(b.get(10));
+                v1 = Double.parseDouble(b.get(11));
+                break;
+            }
+        }
+
+        LatLng ort = new LatLng(v, v1);
+
         // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+        mMap.addMarker(new MarkerOptions().position(ort).title("Ort"));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(ort));
+
+        CameraPosition cameraPosition = new CameraPosition.Builder()
+                .target(ort)     // Sets the center of the map to location user
+                .zoom(14)                   // Sets the zoom
+                .build();                   // Creates a CameraPosition from the builder
+        mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
     }
     private void getBadiTemp(String url) {
         final ArrayAdapter temps = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1);

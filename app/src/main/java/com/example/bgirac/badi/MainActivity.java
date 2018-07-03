@@ -27,6 +27,7 @@ public class MainActivity extends AppCompatActivity {
     private ListView badis;
 
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -92,7 +93,6 @@ public class MainActivity extends AppCompatActivity {
 
         for(ArrayList<String> b: allBadis) {
             badiliste.add(b.get(5)+"-"+b.get(8));
-
 
         }
 
