@@ -6,6 +6,16 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:actionButtonStyle" >@style/ActionButton</item>
+        <item name="actionButtonStyle" >@style/ActionButton</item>
     </style>
 
+    <style name="ActionButton" parent="@android:style/Widget.ActionButton" >
+        <item name="android:drawablePadding">@dimen/action_button_padding</item>
+        <!--<item name="android:actionBarSize">@dimen/design_navigation_icon_size</item>
+        <item name="android:width">@dimen/design_navigation_icon_size</item>
+        <item name="android:minWidth">@dimen/design_navigation_icon_size</item>
+        <item name="android:maxWidth">@dimen/design_navigation_icon_size</item>
+        <item name="android:height">@dimen/design_navigation_icon_size</item>-->
+    </style>
 </resources>

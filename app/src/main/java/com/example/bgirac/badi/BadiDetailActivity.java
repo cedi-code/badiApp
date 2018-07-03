@@ -3,12 +3,20 @@ package com.example.bgirac.badi;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 import org.apache.commons.io.IOUtils;
 import org.json.JSONException;
@@ -20,11 +28,13 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class BadiDetailActivity extends AppCompatActivity {
+public class BadiDetailActivity extends FragmentActivity implements OnMapReadyCallback {
     private static String TAG = "BadiInfo";
     private String badiId;
     private String name;
     private ProgressDialog mDialog;
+
+    private GoogleMap mMap;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,6 +50,20 @@ public class BadiDetailActivity extends AppCompatActivity {
         mDialog = ProgressDialog.show(this, "Lade Badi-Infos", "bitte warten...(*￣з￣)");
 
         getBadiTemp("http://www.wiewarm.ch/api/v1/bad.json/" + badiId);
+
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+
+        mapFragment.getMapAsync(this);
+
+    }
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        mMap = googleMap;
+
+        // Add a marker in Sydney and move the camera
+        LatLng sydney = new LatLng(-34, 151);
+        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
     }
     private void getBadiTemp(String url) {
         final ArrayAdapter temps = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1);
