@@ -31,7 +31,12 @@ public class SearchResultActivity extends Activity {
             String query = intent.getStringExtra(SearchManager.QUERY);
             //use the query to search your data somehow
             Log.i("query", query);
-
+            Intent intentBadi = new Intent(getApplicationContext(), badis.class);
+            intentBadi.putExtra("filter", query);
+            startActivity(intentBadi);
         }
     }
+
+
+
 }
