@@ -1,9 +1,15 @@
 package com.example.bgirac.badi;
 
+import android.Manifest;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Criteria;
 import android.location.Location;
+import android.location.LocationManager;
 import android.os.AsyncTask;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -11,6 +17,7 @@ import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -32,12 +39,15 @@ import java.util.List;
 
 public class BadiDetailActivity extends FragmentActivity implements OnMapReadyCallback {
     private static String TAG = "BadiInfo";
+    private LocationManager locationManager;
+    LocListener ll = new LocListener();
     private String badiId;
     private String name;
     private ProgressDialog mDialog;
     ArrayAdapter badiliste;
 
     private GoogleMap mMap;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,7 +68,17 @@ public class BadiDetailActivity extends FragmentActivity implements OnMapReadyCa
 
         mapFragment.getMapAsync(this);
 
+        locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+
+
     }
+
+    private void getLocationPermission() {
+        Log.d(TAG, "getLocationPermission: getting location permission");
+        String[] permissions = {Manifest.permission.ACCESS_FINE_LOCATION};
+        Manifest.permission
+    }
+
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
@@ -69,14 +89,15 @@ public class BadiDetailActivity extends FragmentActivity implements OnMapReadyCa
         double v = 0;
         double v1 = 0;
 
-        for(ArrayList<String> b: allBadis) {
-            if(badiId.equals(b.get(0))) {
+        for (ArrayList<String> b : allBadis) {
+            if (badiId.equals(b.get(0))) {
                 v = Double.parseDouble(b.get(10));
                 v1 = Double.parseDouble(b.get(11));
                 break;
             }
         }
 
+        // -- Position von der Badi -- //
         LatLng ort = new LatLng(v, v1);
 
         // Add a marker in Sydney and move the camera
@@ -88,6 +109,10 @@ public class BadiDetailActivity extends FragmentActivity implements OnMapReadyCa
                 .zoom(14)                   // Sets the zoom
                 .build();                   // Creates a CameraPosition from the builder
         mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+
+        // -- Position vom Smarphone -- //
+        LatLng myPos = new LatLng(ll.getLat(), ll.getLon());
+        mMap.addMarker(new MarkerOptions().position(myPos).title("MyPos"));
     }
     private void getBadiTemp(String url) {
         final ArrayAdapter temps = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1);
