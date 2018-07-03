@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -17,7 +18,7 @@ import android.widget.SearchView;
 import android.widget.Toast;
 
 
-
+import java.io.Serializable;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
@@ -26,25 +27,33 @@ public class MainActivity extends AppCompatActivity {
     private final static String AARBERG = "Schwimmbad Aarberg (BE)";
     private final static String ADELBODEN = "Schwimmbad Gruebi Adelboden (BE)";
     private final static String BERN = "Stadberner Baeder Bern (BE)";
+    private ArrayList<String> activeFilters = new ArrayList<>();
     private ListView badis;
 
 
 
-    @Override
+    //@Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        Intent intent = getIntent();
 
-
-
+        // TODO remove filter!!!
+        if(intent.hasExtra("kanton")) {
+            if(!activeFilters.contains(intent.getStringExtra("kanton"))) {
+                activeFilters.add(intent.getStringExtra("kanton"));
+            }
+        }
         init();
+
+
+
     }
     private void init() {
         ImageView img = (ImageView)findViewById(R.id.badilogo);
         img.setImageResource(R.mipmap.ic_launcher);
         addBadisToList();
 
-        Intent intent = new Intent(getApplicationContext(), BadiDetailActivity.class);
 
         // intent.putExtra("badi","71");
 
@@ -54,18 +63,6 @@ public class MainActivity extends AppCompatActivity {
                 Intent intent = new Intent(getApplicationContext(), BadiDetailActivity.class);
                 String selected = adapterView.getItemAtPosition(i).toString();
                 Toast.makeText(MainActivity.this, selected, Toast.LENGTH_SHORT).show();
-
-                if (getString(R.string.badaarberg).equals(selected)) {
-                    intent.putExtra("badi", "71");
-
-
-                } else if (getString(R.string.badadelboden).equals(selected)) {
-                    intent.putExtra("badi", "27");
-
-                } else if (getString(R.string.badbern).equals(selected)) {
-                    intent.putExtra("badi", "6");
-
-                }
                 String badii = "";
                 final ArrayList<ArrayList<String>> allBadis = BadiData.allBadis(getApplicationContext());
                 for(ArrayList<String> b: allBadis) {
@@ -91,20 +88,29 @@ public class MainActivity extends AppCompatActivity {
         final ArrayList<ArrayList<String>> allBadis = BadiData.allBadis(getApplicationContext());
         badis= (ListView)findViewById(R.id.badiliste);
         badiliste = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1);
-        /*badiliste.add(getString(R.string.badaarberg));
-        badiliste.add(getString(R.string.badadelboden));
-        badiliste.add(getString(R.string.badbern)); */
 
         Intent intent = getIntent();
-        String filter = "";
-        if(intent.hasExtra("filter")) {
-            filter = intent.getStringExtra("filter");
 
-        }
         for(ArrayList<String> b: allBadis) {
-            if(b.get(5).toLowerCase().contains(filter.toLowerCase())) {
+            if(intent.hasExtra("filter")) {
+
+                if((    b.get(5).toLowerCase().contains(intent.getStringExtra("filter").toLowerCase()) ||
+                        b.get(8).toLowerCase().contains(intent.getStringExtra("filter").toLowerCase()))) {
+                    badiliste.add(b.get(5)+"-"+b.get(8));
+                }
+
+            }
+            else if(intent.hasExtra("kanton")) {
+                 for(String k: activeFilters) {
+                     if(b.get(6).equals(k)) {
+                         badiliste.add(b.get(5)+"-"+b.get(8));
+                     }
+                 }
+
+            }else {
                 badiliste.add(b.get(5)+"-"+b.get(8));
             }
+
 
         }
 
@@ -123,6 +129,28 @@ public class MainActivity extends AppCompatActivity {
                 searchManager.getSearchableInfo(getComponentName()));
 
         return true;
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle item selection
+        switch (item.getItemId()) {
+            case R.id.filter:
+                showFilters();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    public void showFilters() {
+
+        Intent intentFilter = new Intent(getApplicationContext(), filters.class);
+        intentFilter.setClass(MainActivity.this, filters.class);
+
+        // intentFilter.setFlags(intentFilter.FLAG_ACTIVITY_NEW_TASK | intentFilter.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intentFilter);
+        finish();
+
     }
 
 

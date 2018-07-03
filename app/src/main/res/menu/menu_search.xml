@@ -14,7 +14,8 @@
         android:checkable="false"
         android:icon="@mipmap/flash"
         android:title="test"
-        app:showAsAction="always"></item>
+        app:showAsAction="always"
+        ></item>
 
 
 </menu>

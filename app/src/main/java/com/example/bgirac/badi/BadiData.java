@@ -8,6 +8,7 @@ import java.util.Scanner;
 
 public class BadiData {
     private static ArrayList<ArrayList<String>> dataFromFile;
+    private static ArrayList<ArrayList<String>> dataFromFile2;
 
     private BadiData(Context c) {
         Scanner scanner = new Scanner(c.getResources().openRawResource(R.raw.badi_ids_dataset));
@@ -25,6 +26,22 @@ public class BadiData {
 
         }
         scanner.close();
+
+        Scanner scanner2 = new Scanner(c.getResources().openRawResource(R.raw.kantone));
+
+        scanner2.useDelimiter(";");
+
+        dataFromFile2 = new ArrayList<ArrayList<String>>();
+
+        while (scanner2.hasNext()) {
+            String dataInRow = scanner2.nextLine();
+            String[] dataInRowArray = dataInRow.split(";");
+
+            ArrayList<String> rowDataFromFile = new ArrayList<String>(Arrays.asList(dataInRowArray));
+            dataFromFile2.add(rowDataFromFile);
+
+        }
+        scanner2.close();
     }
     public static ArrayList<ArrayList<String>> allBadis(Context c) {
         if(null == dataFromFile) {
@@ -32,4 +49,11 @@ public class BadiData {
         }
         return dataFromFile;
     }
+    public static ArrayList<ArrayList<String>> allKantone(Context c) {
+        if(null == dataFromFile2) {
+            new BadiData(c);
+        }
+        return dataFromFile2;
+    }
+
 }
