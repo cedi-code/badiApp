@@ -76,7 +76,7 @@ public class BadiDetailActivity extends FragmentActivity implements OnMapReadyCa
     private void getLocationPermission() {
         Log.d(TAG, "getLocationPermission: getting location permission");
         String[] permissions = {Manifest.permission.ACCESS_FINE_LOCATION};
-        Manifest.permission
+        //Manifest.permission
     }
 
     @Override

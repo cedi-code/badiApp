@@ -35,6 +35,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+
+
         init();
     }
     private void init() {
@@ -93,8 +95,16 @@ public class MainActivity extends AppCompatActivity {
         badiliste.add(getString(R.string.badadelboden));
         badiliste.add(getString(R.string.badbern)); */
 
+        Intent intent = getIntent();
+        String filter = "";
+        if(intent.hasExtra("filter")) {
+            filter = intent.getStringExtra("filter");
+
+        }
         for(ArrayList<String> b: allBadis) {
-            badiliste.add(b.get(5)+"-"+b.get(8));
+            if(b.get(5).toLowerCase().contains(filter.toLowerCase())) {
+                badiliste.add(b.get(5)+"-"+b.get(8));
+            }
 
         }
 
