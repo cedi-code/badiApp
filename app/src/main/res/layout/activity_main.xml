@@ -26,10 +26,15 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:id="@+id/badilogo"         />
+
+
+
+
     <ListView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
         android:id="@+id/badiliste"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_gravity="bottom"></ListView>
+
 
 </LinearLayout>

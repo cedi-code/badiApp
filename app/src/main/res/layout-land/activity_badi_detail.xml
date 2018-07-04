@@ -1,48 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:map="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:paddingBottom="16dp"
     android:paddingLeft="16dp"
     android:paddingRight="16dp"
     android:paddingTop="16dp"
-    android:paddingBottom="16dp"
-    tools:context="com.example.bgirac.badi.BadiDetailActivity"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:orientation="vertical"
-    android:weightSum="1"     >
-        <TextView
-            android:text="Badi 1"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/badiinfos"
-            android:textSize="20dp"         />
+    android:weightSum="1"
+    tools:context="com.example.bgirac.badi.BadiDetailActivity">
 
-        <Button
-            android:id="@+id/onGoogleMaps"
-            style="@style/AppTheme"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|left"
-            android:text="view on Maps"
-            android:elevation="10dp"
-            android:background="@drawable/myrect"/>
 
-        <ListView
-            android:id="@+id/badidetails"
-            android:layout_width="fill_parent"
-            android:layout_height="239dp"
-            android:layout_weight="11.05" />
-
-        <fragment
-            android:id="@+id/map"
-            android:name="com.google.android.gms.maps.SupportMapFragment"
-            android:layout_width="288dp"
+        <android.support.v7.widget.CardView
+            android:layout_width="250dp"
             android:layout_height="match_parent"
-            android:elevation="5dp"
-            android:layout_gravity="bottom|right"
-            android:background="@drawable/myrect"
-            tools:context=".BadiDetailActivity"
-            />
+            android:layout_gravity="left"
+            map:cardElevation="2dp">
 
-</FrameLayout>
+                <ListView
+                    android:id="@+id/badidetails"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:paddingLeft="20dp"
+                    android:scrollbars="horizontal" />
+
+        </android.support.v7.widget.CardView>
+
+        <android.support.v7.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="bottom|right"
+            map:cardElevation="2dp">
+
+                <fragment
+                    android:id="@+id/map"
+                    android:name="com.google.android.gms.maps.SupportMapFragment"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    tools:context=".BadiDetailActivity" />
+
+                <Button
+                    android:id="@+id/onGoogleMaps"
+                    style="@style/ActionButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom|right"
+                    android:elevation="5dp"
+                    android:text="view on Maps" />
+
+        </android.support.v7.widget.CardView>
+
+</LinearLayout>

@@ -57,9 +57,9 @@ public class BadiDetailActivity extends FragmentActivity implements OnMapReadyCa
         badiId = intent.getStringExtra("badi");
         badiData = intent.getStringArrayListExtra("badiData");
 
-        TextView txt = (TextView) findViewById(R.id.badiinfos);
+ //       TextView txt = (TextView) findViewById(R.id.badiinfos);
 
-        txt.setText(badiData.get(5) + "-" + badiData.get(8));
+//        txt.setText(badiData.get(5) + "-" + badiData.get(8));
 
         mDialog = ProgressDialog.show(this, "Lade Badi-Infos", "bitte warten...(*￣з￣)");
 
@@ -67,11 +67,15 @@ public class BadiDetailActivity extends FragmentActivity implements OnMapReadyCa
 
         ListView badidetails = (ListView) findViewById(R.id.badidetails);
 
+
+
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
 
         mapFragment.getMapAsync(this);
 
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+
+
 
 
     }
@@ -130,10 +134,10 @@ public class BadiDetailActivity extends FragmentActivity implements OnMapReadyCa
                     // webseite antwort lesen
                     int code = conn.getResponseCode();
 
-                    mDialog.dismiss();
+
 
                     msq = IOUtils.toString(conn.getInputStream());
-                    msq = IOUtils.toString(conn.getInputStream());
+
 
                     Log.i(TAG, Integer.toString(code));
 
@@ -142,12 +146,13 @@ public class BadiDetailActivity extends FragmentActivity implements OnMapReadyCa
                 }
                 return msq;
             }
+            @Override
             public void onPostExecute(String result) {
                 try {
                     List<String> badiInfos = parseBadiTemp(result);
 
                     ListView badidetails = (ListView) findViewById(R.id.badidetails);
-
+                    mDialog.dismiss();
                     temps.addAll(badiInfos);
                     temps.add("typ: " + badiData.get(9));
                     temps.add("Adresse: " + badiData.get(12));
