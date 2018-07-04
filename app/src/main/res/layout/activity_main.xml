@@ -28,13 +28,21 @@
         android:id="@+id/badilogo"         />
 
 
-
-
     <ListView
         android:id="@+id/badiliste"
         android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_gravity="bottom">
+
+
+    </ListView>
+
+    <Button
+        android:id="@+id/button2"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom"></ListView>
+        android:text="Button"
+        android:onClick="startMap"/>
 
 
 </LinearLayout>
