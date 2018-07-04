@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:map="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:paddingLeft="16dp"
     android:paddingRight="16dp"
@@ -16,19 +17,26 @@
             android:layout_height="wrap_content"
             android:id="@+id/badiinfos"
             android:textSize="20dp"         />
+
         <ListView
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
             android:id="@+id/badidetails"
-            android:layout_weight="11.05"
-            />
-        <fragment xmlns:android="http://schemas.android.com/apk/res/android"
-            xmlns:map="http://schemas.android.com/apk/res-auto"
-            xmlns:tools="http://schemas.android.com/tools"
+            android:layout_width="fill_parent"
+            android:layout_height="325dp"
+            android:layout_weight="11.05" />
+
+        <fragment
             android:id="@+id/map"
             android:name="com.google.android.gms.maps.SupportMapFragment"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="217dp"
+            android:layout_gravity="bottom"
             tools:context=".BadiDetailActivity" />
 
-</LinearLayout>
+        <Button
+            android:id="@+id/onGoogleMaps"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|right"
+            android:text="view on Maps" />
+
+</FrameLayout>
