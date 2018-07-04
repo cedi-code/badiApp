@@ -14,6 +14,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Adapter;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -42,7 +43,7 @@ public class BadiDetailActivity extends FragmentActivity implements OnMapReadyCa
     private LocationManager locationManager;
     LocListener ll = new LocListener();
     private String badiId;
-    private String name;
+    public ArrayList<String> badiData;
     private ProgressDialog mDialog;
     ArrayAdapter badiliste;
 
@@ -54,15 +55,17 @@ public class BadiDetailActivity extends FragmentActivity implements OnMapReadyCa
         setContentView(R.layout.activity_badi_detail);
         Intent intent = getIntent();
         badiId = intent.getStringExtra("badi");
-        name = intent.getStringExtra("name");
+        badiData = intent.getStringArrayListExtra("badiData");
 
         TextView txt = (TextView) findViewById(R.id.badiinfos);
 
-        txt.setText(name);
+        txt.setText(badiData.get(5) + "-" + badiData.get(8));
 
         mDialog = ProgressDialog.show(this, "Lade Badi-Infos", "bitte warten...(*￣з￣)");
 
         getBadiTemp("http://www.wiewarm.ch/api/v1/bad.json/" + badiId);
+
+        ListView badidetails = (ListView) findViewById(R.id.badidetails);
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
 
@@ -130,6 +133,7 @@ public class BadiDetailActivity extends FragmentActivity implements OnMapReadyCa
                     mDialog.dismiss();
 
                     msq = IOUtils.toString(conn.getInputStream());
+                    msq = IOUtils.toString(conn.getInputStream());
 
                     Log.i(TAG, Integer.toString(code));
 
@@ -144,8 +148,9 @@ public class BadiDetailActivity extends FragmentActivity implements OnMapReadyCa
 
                     ListView badidetails = (ListView) findViewById(R.id.badidetails);
 
-
                     temps.addAll(badiInfos);
+                    temps.add("typ: " + badiData.get(9));
+                    temps.add("Adresse: " + badiData.get(12));
 
                     badidetails.setAdapter(temps);
 
