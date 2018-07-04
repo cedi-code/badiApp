@@ -11,8 +11,10 @@ import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.widget.Adapter;
 import android.widget.ArrayAdapter;
@@ -38,7 +40,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class BadiDetailActivity extends FragmentActivity implements OnMapReadyCallback {
+public class BadiDetailActivity extends AppCompatActivity  implements OnMapReadyCallback {
     private static String TAG = "BadiInfo";
     private LocationManager locationManager;
     LocListener ll = new LocListener();
@@ -56,6 +58,17 @@ public class BadiDetailActivity extends FragmentActivity implements OnMapReadyCa
         Intent intent = getIntent();
         badiId = intent.getStringExtra("badi");
         badiData = intent.getStringArrayListExtra("badiData");
+
+        Toolbar myChildToolbar =
+                (Toolbar) findViewById(R.id.my_toolbar_filters);
+        setSupportActionBar(myChildToolbar);
+
+        // Get a support ActionBar corresponding to this toolbar
+        ActionBar ab = getSupportActionBar();
+
+        // Enable the Up button
+        ab.setDisplayHomeAsUpEnabled(true);
+        myChildToolbar.setTitle(badiData.get(5) + "-" + badiData.get(8));
 
  //       TextView txt = (TextView) findViewById(R.id.badiinfos);
 
@@ -148,6 +161,8 @@ public class BadiDetailActivity extends FragmentActivity implements OnMapReadyCa
                     List<String> badiInfos = parseBadiTemp(result);
 
                     ListView badidetails = (ListView) findViewById(R.id.badidetails);
+                    TextView badiText = (TextView) findViewById(R.id.badiText);
+                    badiText.setText(badiInfos.get(0));
                     mDialog.dismiss();
                     temps.addAll(badiInfos);
                     temps.add("typ: " + badiData.get(9));
