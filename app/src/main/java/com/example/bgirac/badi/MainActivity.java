@@ -65,6 +65,8 @@ public class MainActivity extends AppCompatActivity  implements OnMapReadyCallba
 
     }
 
+
+
     private void init() {
         ImageView img = (ImageView) findViewById(R.id.badilogo);
         img.setImageResource(R.mipmap.ic_launcher);
@@ -100,6 +102,10 @@ public class MainActivity extends AppCompatActivity  implements OnMapReadyCallba
 
     }
 
+    public void startMap(View v) {
+        Intent intent = new Intent(getApplicationContext(), MapsActivity.class);
+        startActivity(intent);
+    }
     private void addBadisToList() {
         final ArrayList<ArrayList<String>> allBadis = BadiData.allBadis(getApplicationContext());
         badis = (ListView) findViewById(R.id.badiliste);
