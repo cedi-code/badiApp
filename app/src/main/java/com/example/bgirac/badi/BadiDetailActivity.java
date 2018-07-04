@@ -64,20 +64,16 @@ public class BadiDetailActivity extends FragmentActivity implements OnMapReadyCa
         mDialog = ProgressDialog.show(this, "Lade Badi-Infos", "bitte warten...(*￣з￣)");
 
         getBadiTemp("http://www.wiewarm.ch/api/v1/bad.json/" + badiId);
+        WetterKlasse wk = new WetterKlasse((ListView) findViewById(R.id.wetter), this, "Bern");
+        wk.start();
 
         ListView badidetails = (ListView) findViewById(R.id.badidetails);
-
-
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
 
         mapFragment.getMapAsync(this);
 
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-
-
-
-
     }
 
     private void getLocationPermission() {

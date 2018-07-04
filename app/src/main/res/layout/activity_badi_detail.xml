@@ -14,22 +14,34 @@
 
         <android.support.v7.widget.CardView
             android:layout_width="378dp"
-            android:layout_height="302dp"
+            android:layout_height="170dp"
             map:cardElevation="2dp"
             android:layout_gravity="center">
 
-                <ListView
-                    android:paddingLeft="20dp"
-                    android:id="@+id/badidetails"
-                    android:layout_width="match_parent"
-                    android:layout_height="428dp"
-                    android:scrollbars="horizontal"
-                    />
+            <ListView
+                android:id="@+id/badidetails"
+                android:layout_width="match_parent"
+                android:layout_height="428dp"
+                android:paddingLeft="20dp"
+                android:scrollbars="horizontal" />
 
         </android.support.v7.widget.CardView>
 
+    <android.support.v7.widget.CardView
+        android:layout_width="378dp"
+        android:layout_height="170dp"
+        map:cardElevation="2dp"
+        android:layout_gravity="center">
 
+        <ListView
+            android:paddingLeft="20dp"
+            android:id="@+id/wetter"
+            android:layout_width="match_parent"
+            android:layout_height="428dp"
+            android:scrollbars="horizontal"
+            />
 
+    </android.support.v7.widget.CardView>
 
         <android.support.v7.widget.CardView
             android:layout_width="378dp"
