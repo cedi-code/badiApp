@@ -6,7 +6,9 @@ import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
@@ -28,12 +30,17 @@ class WetterKlasse {
     private String wetterArt;
     private Context ct;
     private ListView wetterprognose;
+    private TextView wetterText;
+    private ImageView wetterBild;
 
 
-    public WetterKlasse(ListView lv, Context ct, String ort) {
+
+    public WetterKlasse(ListView lv, Context ct, String ort, TextView txt, ImageView img) {
         this.ct = ct;
         this.ort = ort;
         wetterprognose = lv;
+        wetterText = txt;
+
     }
 
     public void start() {
@@ -67,6 +74,11 @@ class WetterKlasse {
                 try {
                     mDialog.dismiss();
                     List<String> wetter = parseWetterprognose(result);
+                    wetterText.setText( wetter.get(0));
+                    switch (wetter.get(1)) {
+                        case "clear sky":
+
+                    }
                     temps.addAll(wetter);
 
                     wetterprognose.setAdapter(temps);

@@ -5,6 +5,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
@@ -18,6 +19,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.widget.Adapter;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -59,8 +61,13 @@ public class BadiDetailActivity extends AppCompatActivity  implements OnMapReady
         badiId = intent.getStringExtra("badi");
         badiData = intent.getStringArrayListExtra("badiData");
 
+
+
         Toolbar myChildToolbar =
                 (Toolbar) findViewById(R.id.my_toolbar_filters);
+
+        myChildToolbar.setTitle(badiData.get(5) + "-" + badiData.get(8));
+
         setSupportActionBar(myChildToolbar);
 
         // Get a support ActionBar corresponding to this toolbar
@@ -68,7 +75,7 @@ public class BadiDetailActivity extends AppCompatActivity  implements OnMapReady
 
         // Enable the Up button
         ab.setDisplayHomeAsUpEnabled(true);
-        myChildToolbar.setTitle(badiData.get(5) + "-" + badiData.get(8));
+
 
  //       TextView txt = (TextView) findViewById(R.id.badiinfos);
 
@@ -77,7 +84,7 @@ public class BadiDetailActivity extends AppCompatActivity  implements OnMapReady
         mDialog = ProgressDialog.show(this, "Lade Badi-Infos", "bitte warten...(*￣з￣)");
 
         getBadiTemp("http://www.wiewarm.ch/api/v1/bad.json/" + badiId);
-        WetterKlasse wk = new WetterKlasse((ListView) findViewById(R.id.wetter), this, "Bern");
+        WetterKlasse wk = new WetterKlasse((ListView) findViewById(R.id.wetter), this, "Bern", (TextView) findViewById(R.id.wetterText), (ImageView) findViewById(R.id.wetterImage));
         wk.start();
 
         ListView badidetails = (ListView) findViewById(R.id.badidetails);
