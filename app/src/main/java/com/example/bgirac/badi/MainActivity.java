@@ -68,8 +68,8 @@ public class MainActivity extends AppCompatActivity  implements OnMapReadyCallba
 
 
     private void init() {
-        ImageView img = (ImageView) findViewById(R.id.badilogo);
-        img.setImageResource(R.mipmap.ic_launcher);
+        //ImageView img = (ImageView) findViewById(R.id.badilogo);
+        //img.setImageResource(R.mipmap.ic_launcher);
         addBadisToList();
 
 

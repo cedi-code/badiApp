@@ -29,6 +29,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MapsActivity extends AppCompatActivity
@@ -40,6 +41,7 @@ public class MapsActivity extends AppCompatActivity
     Location mLastLocation;
     Marker mCurrLocationMarker;
     FusedLocationProviderClient mFusedLocationClient;
+    public double reichweite = 10000;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,11 +101,12 @@ public class MapsActivity extends AppCompatActivity
             if (locationList.size() > 0) {
                 //The last location in the list is the newest
                 Location location = locationList.get(locationList.size() - 1);
-                Log.i("MapsActivity", "Location: " + location.getLatitude() + " " + location.getLongitude());
+                Log.i("MapsActivityLocation", "Location: " + location.getLatitude() + " " + location.getLongitude());
                 mLastLocation = location;
                 if (mCurrLocationMarker != null) {
                     mCurrLocationMarker.remove();
                 }
+
 
                 //Place current location marker
                 LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
@@ -113,12 +116,43 @@ public class MapsActivity extends AppCompatActivity
                 markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA));
                 mCurrLocationMarker = mGoogleMap.addMarker(markerOptions);
 
+                findeBadi(location);
                 //move map camera
                 mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 11));
             }
         }
     };
 
+    private void findeBadi( Location location) {
+        final ArrayList<ArrayList<String>> allBadis = BadiData.allBadis(getApplicationContext());
+        double diferenzLat = 0.5;
+        int diferenzLatPos = 0;
+        double a = reichweite;
+        String name = "keine Badi gefunden";
+        Location nahsteBadi = new Location("");
+        allBadis.remove(0);
+        for(ArrayList<String> loc : allBadis) {
+            Location targetLocation = new Location("");//provider name is unnecessary
+            targetLocation.setLatitude(Double.parseDouble(loc.get(10)));//your coords of course
+
+            targetLocation.setLongitude(Double.parseDouble(loc.get(11)));
+            if(a > location.distanceTo(targetLocation)) {
+                nahsteBadi.set(targetLocation);
+                a = location.distanceTo(targetLocation);
+                name = loc.get(5) + "-" + loc.get(8);
+
+            }
+
+        }
+
+
+        LatLng latLngBadi = new LatLng(nahsteBadi.getLatitude(), nahsteBadi.getLongitude());
+        MarkerOptions markerOptions2 = new MarkerOptions();
+        markerOptions2.position(latLngBadi);
+        markerOptions2.title(name);
+        markerOptions2.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA));
+        mCurrLocationMarker = mGoogleMap.addMarker(markerOptions2);
+    }
     public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
     private void checkLocationPermission() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
