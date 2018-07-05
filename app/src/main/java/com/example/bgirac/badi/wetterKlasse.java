@@ -86,7 +86,7 @@ class WetterKlasse {
 
                         wetterText.setText(wetter.get(0));
 
-                        int id = Integer.parseInt(wetter.get(2));
+                        int id = Integer.parseInt(wetter.get(3));
                         if (id <= 232 & id >= 200) {
                             //Tonner Wätter
                             wetterBild.setImageResource(R.mipmap.thunderstrorm);
@@ -123,17 +123,30 @@ class WetterKlasse {
                 ArrayList<String> resultList = new ArrayList<String>();
                 JSONObject jsonObject = new JSONObject(jonString);
                 JSONObject wetterTemp = jsonObject.getJSONObject("main");
-
+                String hum = "Humidity: " + wetterTemp.getInt("humidity");
                 double temp = wetterTemp.getDouble("temp");
-                resultList.add("Wetter: "+ (float)temp+" °C");
+                resultList.add("Weather: "+ (float)temp+" °C");
+                resultList.add(hum);
 
                 // Wetter icon scheiss für Cedi
                 JSONArray statusWetter = jsonObject.getJSONArray("weather");
                 JSONObject wetterStausObject = (JSONObject) statusWetter.get(0);
                 String status = wetterStausObject.getString("main");
                 String statusID = wetterStausObject.getString("id");
+                String description = "Description: " + wetterStausObject.getString("description");
                 resultList.add("Status: "+ status);
                 resultList.add(statusID);
+                resultList.add(description);
+
+                //Wind
+                JSONObject wetterWind = jsonObject.getJSONObject("wind");
+                String speed = "Wind speed: " + wetterWind.getInt("speed");
+                resultList.add(speed);
+
+                //Clouds
+                JSONObject wetterClouds = jsonObject.getJSONObject("clouds");
+                String clouds = "Clouds: " + wetterClouds.getInt("all");
+                resultList.add(clouds);
 
                 return resultList;
             }
