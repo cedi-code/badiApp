@@ -6,6 +6,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Scanner;
 
+/**
+ *  Holt sich daten aus der der raw ordner heruas
+ */
 public class BadiData {
     private static ArrayList<ArrayList<String>> dataFromFile;
     private static ArrayList<ArrayList<String>> dataFromFile2;

@@ -39,13 +39,18 @@ public class filters extends AppCompatActivity {
 
         ListView kantoneView = (ListView) findViewById(R.id.kantone);
 
+
         addKantonsliste(kantoneView);
         initClickListener(kantoneView);
 
     }
 
 
-
+    /**
+     * Holt in einem CSV alle Kantone und listet dan diese Auf
+     *
+     * @param kantoneView die Liste wo alle Kantone aufgelistet werden
+     */
     private void addKantonsliste(ListView kantoneView) {
 
         final ArrayList<ArrayList<String>> kantone = BadiData.allKantone(getApplicationContext());
@@ -58,6 +63,12 @@ public class filters extends AppCompatActivity {
 
         kantoneView.setAdapter(kantonsListe);
     }
+
+    /**
+     * Setzt einen onclickListener auf die Items, diese ruft dann einen Intent auf die Main auf mit dem dazugehörigen filter
+     *
+     * @param kantoneView die Liste wo di akntone drauf sind (abkürzungen)
+     */
     private void initClickListener(ListView kantoneView) {
 
 

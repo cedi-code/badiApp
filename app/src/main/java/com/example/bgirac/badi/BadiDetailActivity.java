@@ -3,8 +3,11 @@ package com.example.bgirac.badi;
 import android.Manifest;
 import android.animation.AnimatorInflater;
 import android.animation.StateListAnimator;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -43,6 +46,7 @@ import org.apache.commons.io.IOUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.net.ConnectException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
@@ -91,13 +95,19 @@ public class BadiDetailActivity extends AppCompatActivity  implements OnMapReady
 
 //        txt.setText(badiData.get(5) + "-" + badiData.get(8));
 
-        mDialog = ProgressDialog.show(this, "Lade Badi-Infos", "bitte warten...(*￣з￣)");
 
+        mDialog = ProgressDialog.show(this, "Lade Badi-Infos", "bitte warten...(*￣з￣)");
         getBadiTemp("http://www.wiewarm.ch/api/v1/bad.json/" + badiId);
         WetterKlasse wk = new WetterKlasse((ListView) findViewById(R.id.wetter), this, badiOrt, (TextView) findViewById(R.id.wetterText), (ImageView) findViewById(R.id.wetterImage));
         wk.start(this);
 
-        ListView badidetails = (ListView) findViewById(R.id.badidetails);
+
+
+
+
+
+
+
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
 
@@ -110,6 +120,23 @@ public class BadiDetailActivity extends AppCompatActivity  implements OnMapReady
         Log.d(TAG, "getLocationPermission: getting location permission");
         String[] permissions = {Manifest.permission.ACCESS_FINE_LOCATION};
         //Manifest.permission
+    }
+
+    public void error() {
+        mDialog.dismiss();
+
+        // Alertbox generieren
+        AlertDialog alertDialog = new AlertDialog.Builder(this).create();
+        alertDialog.setTitle("Error");
+        alertDialog.setMessage("Keine Verbindung konnte Hergestellt werden");
+        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        finish();
+                    }
+                });
+        alertDialog.show();
     }
 
     @Override
@@ -155,8 +182,9 @@ public class BadiDetailActivity extends AppCompatActivity  implements OnMapReady
                 String msq= "";
                 try {
                     URL url = new URL(badi[0]);
+                        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
-                    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+
                     // webseite antwort lesen
                     int code = conn.getResponseCode();
 
@@ -169,6 +197,8 @@ public class BadiDetailActivity extends AppCompatActivity  implements OnMapReady
 
                 }catch(Exception e) {
                     Log.v(TAG, e.toString());
+                    error();
+
                 }
                 return msq;
             }
