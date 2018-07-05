@@ -52,6 +52,7 @@ public class BadiDetailActivity extends AppCompatActivity  implements OnMapReady
     private LocationManager locationManager;
     LocListener ll = new LocListener();
     private String badiId;
+    private String badiOrt;
     public ArrayList<String> badiData;
     private ProgressDialog mDialog;
     ArrayAdapter badiliste;
@@ -65,6 +66,7 @@ public class BadiDetailActivity extends AppCompatActivity  implements OnMapReady
         Intent intent = getIntent();
         badiId = intent.getStringExtra("badi");
         badiData = intent.getStringArrayListExtra("badiData");
+        badiOrt = badiData.get(5);
 
         this.overridePendingTransition(R.animator.animation_enter,
                 R.animator.animation_leave);
@@ -90,7 +92,7 @@ public class BadiDetailActivity extends AppCompatActivity  implements OnMapReady
         mDialog = ProgressDialog.show(this, "Lade Badi-Infos", "bitte warten...(*￣з￣)");
 
         getBadiTemp("http://www.wiewarm.ch/api/v1/bad.json/" + badiId);
-        WetterKlasse wk = new WetterKlasse((ListView) findViewById(R.id.wetter), this, "Bern", (TextView) findViewById(R.id.wetterText), (ImageView) findViewById(R.id.wetterImage));
+        WetterKlasse wk = new WetterKlasse((ListView) findViewById(R.id.wetter), this, badiOrt, (TextView) findViewById(R.id.wetterText), (ImageView) findViewById(R.id.wetterImage));
         wk.start();
 
         ListView badidetails = (ListView) findViewById(R.id.badidetails);

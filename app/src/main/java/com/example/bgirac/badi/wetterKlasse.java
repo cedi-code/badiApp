@@ -40,12 +40,12 @@ class WetterKlasse {
         this.ort = ort;
         wetterprognose = lv;
         wetterText = txt;
-
+        wetterBild = img;
     }
 
     public void start() {
         mDialog= ProgressDialog.show(ct, "Lade Wetterprognose","Bitte warten...");
-        getWetter("https://openweathermap.org/data/2.5/weather?q=Bern,CH&appid=b6907d289e10d714a6e88b30761fae22");
+        getWetter("https://openweathermap.org/data/2.5/weather?q="+ort+",CH&appid=b6907d289e10d714a6e88b30761fae22");
     }
 
     private void getWetter(String url){
@@ -74,11 +74,32 @@ class WetterKlasse {
                 try {
                     mDialog.dismiss();
                     List<String> wetter = parseWetterprognose(result);
-                    wetterText.setText( wetter.get(0));
-                    switch (wetter.get(1)) {
-                        case "clear sky":
+                    wetterText.setText(wetter.get(0));
 
+                    int id = Integer.parseInt(wetter.get(2));
+                    if (id <= 232 & id >= 200) {
+                        //Tonner Wätter
+                        wetterBild.setImageResource(R.mipmap.thunderstrorm);
+                    }else if (id <= 321 & id >= 300) {
+                        //liächtä Rägä
+                        wetterBild.setImageResource(R.mipmap.dizzle);
+                    }else if (id <= 531 & id >= 500) {
+                        //Rägä
+                        wetterBild.setImageResource(R.mipmap.rain);
+                    }else if (id <= 622 & id >= 600) {
+                        //Schnee
+                        wetterBild.setImageResource(R.mipmap.snow);
+                    }else if (id <= 781 & id >= 701) {
+                        //irgendwie Atmosphäre -- ke ahnig wieso
+                        wetterBild.setImageResource(R.mipmap.mist);
+                    }else if (id == 800) {
+                        //Sunnä schiin :)
+                        wetterBild.setImageResource(R.mipmap.clear_sky);
+                    }else if (id <= 804 & id >= 801) {
+                        //Wouchä am Himu
+                        wetterBild.setImageResource(R.mipmap.brocken_clouds);
                     }
+
                     temps.addAll(wetter);
 
                     wetterprognose.setAdapter(temps);
@@ -99,7 +120,9 @@ class WetterKlasse {
                 JSONArray statusWetter = jsonObject.getJSONArray("weather");
                 JSONObject wetterStausObject = (JSONObject) statusWetter.get(0);
                 String status = wetterStausObject.getString("main");
+                String statusID = wetterStausObject.getString("id");
                 resultList.add("Status: "+ status);
+                resultList.add(statusID);
 
                 return resultList;
             }
