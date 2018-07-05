@@ -185,6 +185,8 @@ public class MapsActivity extends Fragment
         mCurrLocationMarker = mGoogleMap.addMarker(markerOptions2);
     }
 
+
+
     /**
      * überprüft ob das Gerät die bennötigten Berechtigungen hat.
      */

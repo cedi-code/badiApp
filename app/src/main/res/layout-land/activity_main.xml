@@ -35,8 +35,8 @@
     <android.support.v7.widget.CardView
         android:id="@+id/main_map"
         android:layout_width="match_parent"
-        android:layout_height="90dp"
-        android:layout_weight="0.1">
+        android:layout_height="0dp"
+        android:layout_weight="0.10">
 
 
         <fragment

@@ -23,17 +23,11 @@
                 android:layout_height="?attr/actionBarSize"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:tint="@android:color/white"
-                app:srcCompat="@mipmap/cancel" />
+                android:src="@mipmap/cancel"
+                android:scaleType="fitCenter"
+                />
 
-            <TextView
-                android:id="@+id/dialogWetter"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:gravity="center_vertical"
-                android:text="Dialog title"
-                android:textAppearance="@style/Base.TextAppearance.AppCompat.Title"
-                android:textColor="@android:color/white" />
+
 
 
         </LinearLayout>

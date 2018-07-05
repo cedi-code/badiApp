@@ -1,7 +1,10 @@
 package com.example.bgirac.badi;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -29,18 +32,20 @@ class WetterKlasse {
     private ProgressDialog mDialog;
     private String wetterArt;
     private Context ct;
-    private ListView wetterprognose;
     private TextView wetterText;
     private ImageView wetterBild;
+    private BadiDetailActivity mActivity;
+    private Intent mIntent;
 
 
 
-    public WetterKlasse(ListView lv, Context ct, String ort, TextView txt, ImageView img) {
+    public WetterKlasse(Context ct, String ort, TextView txt, ImageView img, BadiDetailActivity mActivity, Intent intent) {
         this.ct = ct;
         this.ort = ort;
-        wetterprognose = lv;
+        mIntent = intent;
         wetterText = txt;
         wetterBild = img;
+        this.mActivity = mActivity;
     }
     public WetterKlasse() {
 
@@ -152,5 +157,32 @@ class WetterKlasse {
             }
 
         }.execute(url);
+    }
+
+
+    /**
+     * Zeigt dem User ein popup an, das er keine Verbindung hat
+     */
+    private void errorConn() {
+
+        mActivity.runOnUiThread(new Runnable() {
+            public void run() {
+                AlertDialog alertDialog = new AlertDialog.Builder(mActivity).create();
+                alertDialog.setTitle("Error");
+                alertDialog.setMessage("Es konnte keine Verbindung hergestellt werden");
+                alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "erneut versuchen",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                                mActivity.finish();
+                                // getIntent().setFlags(getIntent().FLAG_ACTIVITY_NEW_TASK | getIntent().FLAG_ACTIVITY_CLEAR_TASK);
+                                mActivity.startActivity(mIntent);
+
+
+                            }
+                        });
+                alertDialog.show();
+            }
+        });
     }
 }

@@ -1,6 +1,9 @@
 package com.example.bgirac.badi;
 
 import android.Manifest;
+import android.animation.Animator;
+import android.animation.ObjectAnimator;
+import android.animation.PropertyValuesHolder;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
@@ -10,14 +13,19 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SearchView;
@@ -98,7 +106,7 @@ public class MainActivity extends AppCompatActivity  implements OnMapReadyCallba
             }
         };
         badis.setOnItemClickListener(mListClickedHandler);
-
+        // badis.setOnScrollListener(scroller);
 
     }
 
@@ -194,10 +202,18 @@ public class MainActivity extends AppCompatActivity  implements OnMapReadyCallba
                 return false;
             }
         });
+        /**
+         * Wenn sich die Suchbar geändert wird (offen oder zu)
+         *
+         */
         MenuItemCompat.setOnActionExpandListener(searchItem, new MenuItemCompat.OnActionExpandListener() {
             @Override
             public boolean onMenuItemActionExpand(MenuItem item) {
+
+                // die google Map verstecken
+                hideMap();
                 return true;
+
             }
 
             @Override
@@ -205,6 +221,11 @@ public class MainActivity extends AppCompatActivity  implements OnMapReadyCallba
                 filter = "";
                 badiliste.clear();
                 addBadisToList();
+
+                // die Google map wieder ersichtlich machen
+                final ImageButton btn = (ImageButton)findViewById(R.id.image_up_main);
+                expandMapFragment(btn);
+
                 return true;
             }
         });
@@ -236,40 +257,108 @@ public class MainActivity extends AppCompatActivity  implements OnMapReadyCallba
 
     }
 
+    private void hideMap() {
+        final CardView card = (CardView) findViewById(R.id.main_map);
+        ViewGroup.LayoutParams paramsListe = badis.getLayoutParams();
+        ViewGroup.LayoutParams params = card.getLayoutParams();
+        params.height = -1;
 
-    /*public void initSearchView()
-    {
-        final SearchView searchView =
-                (SearchView) search_menu.findItem(R.id.action_filter_search).getActionView();
+        card.setVisibility(View.GONE);
 
-        // Enable Submit button
-
-        searchView.setSubmitButtonEnabled(true);
-
-        // Change search close button image
-
-        ImageView closeButton = (ImageView) searchView.findViewById(R.id.search_close_btn);
-        closeButton.setImageResource(R.drawable.ic_close);
-
-
-        // Set hint and the text colors
-
-        EditText txtSearch = ((EditText) searchView.findViewById(android.support.v7.appcompat.R.id.search_src_text));
-        txtSearch.setHint("Search..");
-        txtSearch.setHintTextColor(Color.DKGRAY);
-        txtSearch.setTextColor(getResources().getColor(R.color.colorPrimary));
+    }
+    /**
+     * Vergrössert die Map
+     *
+     * @param v immageButton
+     */
+    public void expandMapFragment(View v){
+        final CardView card = (CardView) findViewById(R.id.main_map);
+        final ImageButton btn = (ImageButton)findViewById(R.id.image_up_main);
+        card.setVisibility(View.VISIBLE);
+        ViewGroup.LayoutParams params = card.getLayoutParams();
+        if(params.height != 90 && params.height != 0 ) {
+            if(onTop) {
+                params.height = 90;
+            }else {
+                params.height = 0;
+            }
 
 
-        // Set the cursor
 
-        AutoCompleteTextView searchTextView = (AutoCompleteTextView) searchView.findViewById(android.support.v7.appcompat.R.id.search_src_text);
-        try {
-            Field mCursorDrawableRes = TextView.class.getDeclaredField("mCursorDrawableRes");
-            mCursorDrawableRes.setAccessible(true);
-            mCursorDrawableRes.set(searchTextView, R.drawable.search_cursor); //This sets the cursor resource ID to 0 or @null which will make it visible on white background
-        } catch (Exception e) {
-            e.printStackTrace();
+        }else {
+            params.height = ViewGroup.LayoutParams.MATCH_PARENT;
+
         }
+
+        PropertyValuesHolder pvhLeft = PropertyValuesHolder.ofInt("left", 0, 1);
+        PropertyValuesHolder pvhTop = PropertyValuesHolder.ofInt("top", 0, 1);
+        PropertyValuesHolder pvhRight = PropertyValuesHolder.ofInt("right", 0, 1);
+        PropertyValuesHolder pvhBottom = PropertyValuesHolder.ofInt("bottom", 0, 1);
+
+
+        final Animator collapseExpandAnim = ObjectAnimator.ofPropertyValuesHolder(card, pvhLeft, pvhTop,
+                pvhRight, pvhBottom);
+        collapseExpandAnim.setupStartValues();
+
+        card.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+            @Override
+            public boolean onPreDraw() {
+                card.getViewTreeObserver().removeOnPreDrawListener(this);
+                collapseExpandAnim.setupEndValues();
+                collapseExpandAnim.start();
+                return false;
+            }
+        });
+        card.requestLayout();
+    }
+
+    /**
+     * Schaut ob die Listview beim Obersten element ist,
+     *
+     * falls ja, wird die Map etwas grösser -> onTop =true
+     *
+     * falls nein, wird sie kleiner -> onTop = false
+     *
+     * onTop wird dan bei der Methode expandMapFragment verglichen
+     */
+    boolean onTop = true;
+    /*AbsListView.OnScrollListener scroller = new AbsListView.OnScrollListener() {
+
+        @Override
+        public void onScrollStateChanged(AbsListView view, int scrollState) {
+            if(onTop) {
+
+            }
+
         }
-*/
+
+
+        @Override
+        public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+            if (firstVisibleItem == 0) {
+                // check if we reached the top or bottom of the list
+                View v = badis.getChildAt(0);
+                onTop = true;
+                final ImageButton btn = (ImageButton)findViewById(R.id.image_up_main);
+                expandMapFragment(btn);
+                int offset = (v == null) ? 0 : v.getTop();
+                if (offset == 0) {
+
+                    return;
+                }
+            } else {
+                if(onTop) {
+                    onTop = false;
+
+                    final ImageButton btn = (ImageButton)findViewById(R.id.image_up_main);
+                    expandMapFragment(btn);
+                }
+
+            }
+        }
+    }; */
+
+
+
+
 }

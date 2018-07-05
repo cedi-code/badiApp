@@ -17,6 +17,9 @@
         <item name="android:drawablePadding">@dimen/action_button_padding</item>
         <item name="android:color">@dimen/action_button_padding</item>
     </style>
-
+    <style name="Theme.MyFancyTheme" parent="ThemeOverlay.AppCompat.ActionBar">
+        <item name="android:homeAsUpIndicator">@mipmap/left_arrow</item>
+        <item name="android:textSize">10dp</item>
+    </style>
 
 </resources>

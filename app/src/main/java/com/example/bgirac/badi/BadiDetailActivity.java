@@ -1,8 +1,12 @@
 package com.example.bgirac.badi;
 
 import android.Manifest;
+import android.animation.Animator;
 import android.animation.AnimatorInflater;
+import android.animation.ObjectAnimator;
+import android.animation.PropertyValuesHolder;
 import android.animation.StateListAnimator;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -27,8 +31,11 @@ import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.Adapter;
 import android.widget.ArrayAdapter;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -98,7 +105,7 @@ public class BadiDetailActivity extends AppCompatActivity  implements OnMapReady
 
         mDialog = ProgressDialog.show(this, "Lade Badi-Infos", "bitte warten...(*￣з￣)");
         getBadiTemp("http://www.wiewarm.ch/api/v1/bad.json/" + badiId);
-        WetterKlasse wk = new WetterKlasse((ListView) findViewById(R.id.wetter), this, badiOrt, (TextView) findViewById(R.id.wetterText), (ImageView) findViewById(R.id.wetterImage));
+        WetterKlasse wk = new WetterKlasse(this, badiOrt, (TextView) findViewById(R.id.wetterText), (ImageView) findViewById(R.id.wetterImage),BadiDetailActivity.this, getIntent());
         wk.start(this);
 
 
@@ -116,28 +123,7 @@ public class BadiDetailActivity extends AppCompatActivity  implements OnMapReady
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
     }
 
-    private void getLocationPermission() {
-        Log.d(TAG, "getLocationPermission: getting location permission");
-        String[] permissions = {Manifest.permission.ACCESS_FINE_LOCATION};
-        //Manifest.permission
-    }
 
-    public void error() {
-        mDialog.dismiss();
-
-        // Alertbox generieren
-        AlertDialog alertDialog = new AlertDialog.Builder(this).create();
-        alertDialog.setTitle("Error");
-        alertDialog.setMessage("Keine Verbindung konnte Hergestellt werden");
-        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                        finish();
-                    }
-                });
-        alertDialog.show();
-    }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
@@ -174,6 +160,56 @@ public class BadiDetailActivity extends AppCompatActivity  implements OnMapReady
         LatLng myPos = new LatLng(ll.getLat(), ll.getLon());
         mMap.addMarker(new MarkerOptions().position(myPos).title("MyPos"));
     }
+
+    /**
+     * Vergrössert die Map
+     *
+     * @param v immageButton
+     */
+    boolean landscape = false;
+    public void expandMap(View v){
+        final CardView card = (CardView) findViewById(R.id.badi_maps);
+        final ImageButton btn = (ImageButton)findViewById(R.id.button_up_map);
+        ViewGroup.LayoutParams params = card.getLayoutParams();
+        if(params.height != ViewGroup.LayoutParams.MATCH_PARENT) {
+            params.height = ViewGroup.LayoutParams.MATCH_PARENT;
+            landscape = false;
+
+        }else if(params.width != ViewGroup.LayoutParams.MATCH_PARENT) {
+
+            params.width = ViewGroup.LayoutParams.MATCH_PARENT;
+            landscape = true;
+
+        }else {
+            if(landscape) {
+                params.width = 0;
+            }else {
+                params.height = 0;
+            }
+        }
+
+        PropertyValuesHolder pvhLeft = PropertyValuesHolder.ofInt("left", 0, 1);
+        PropertyValuesHolder pvhTop = PropertyValuesHolder.ofInt("top", 0, 1);
+        PropertyValuesHolder pvhRight = PropertyValuesHolder.ofInt("right", 0, 1);
+        PropertyValuesHolder pvhBottom = PropertyValuesHolder.ofInt("bottom", 0, 1);
+
+
+        final Animator collapseExpandAnim = ObjectAnimator.ofPropertyValuesHolder(card, pvhLeft, pvhTop,
+                pvhRight, pvhBottom);
+        collapseExpandAnim.setupStartValues();
+
+        card.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+            @Override
+            public boolean onPreDraw() {
+                card.getViewTreeObserver().removeOnPreDrawListener(this);
+                collapseExpandAnim.setupEndValues();
+                collapseExpandAnim.start();
+                return false;
+            }
+        });
+        card.requestLayout();
+    }
+
     private void getBadiTemp(String url) {
         final ArrayAdapter temps = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1);
 
@@ -197,7 +233,8 @@ public class BadiDetailActivity extends AppCompatActivity  implements OnMapReady
 
                 }catch(Exception e) {
                     Log.v(TAG, e.toString());
-                    error();
+                    mDialog.dismiss();
+
 
                 }
                 return msq;
@@ -207,18 +244,19 @@ public class BadiDetailActivity extends AppCompatActivity  implements OnMapReady
                 try {
                     List<String> badiInfos = parseBadiTemp(result);
 
-                    ListView badidetails = (ListView) findViewById(R.id.badidetails);
+                    //ListView badidetails = (ListView) findViewById(R.id.badidetails);
                     TextView badiText = (TextView) findViewById(R.id.badiText);
                     badiText.setText(badiInfos.get(0));
                     mDialog.dismiss();
-                    temps.addAll(badiInfos);
+                    /*temps.addAll(badiInfos);
                     temps.add("typ: " + badiData.get(9));
                     temps.add("Adresse: " + badiData.get(12));
 
-                    badidetails.setAdapter(temps);
+                    badidetails.setAdapter(temps); */
 
                 }catch (JSONException e) {
                     Log.v(TAG, e.toString());
+                    errorConn();
                 }
             }
             private List parseBadiTemp(String jonString)throws JSONException {
@@ -242,6 +280,32 @@ public class BadiDetailActivity extends AppCompatActivity  implements OnMapReady
                 return resultList;
             }
         }.execute(url);
+    }
+    BadiDetailActivity mActivity = this;
+
+    /**
+     * Zeigt dem User ein popup an, das er keine Verbindung hat
+     */
+    private void errorConn() {
+        mActivity.runOnUiThread(new Runnable() {
+            public void run() {
+                AlertDialog alertDialog = new AlertDialog.Builder(mActivity).create();
+                alertDialog.setTitle("Error");
+                alertDialog.setMessage("Es konnte keine Verbindung hergestellt werden");
+                alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "erneut versuchen",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                                mActivity.finish();
+                                // getIntent().setFlags(getIntent().FLAG_ACTIVITY_NEW_TASK | getIntent().FLAG_ACTIVITY_CLEAR_TASK);
+                                mActivity.startActivity(getIntent());
+
+
+                            }
+                        });
+                alertDialog.show();
+            }
+        });
     }
     private void initCards() {
         CardView card1 = (CardView) findViewById(R.id.card_view1);
