@@ -24,6 +24,8 @@
 
 
 
+
+
     <ListView
         android:id="@+id/badiliste"
         android:layout_width="match_parent"
@@ -34,14 +36,23 @@
 
     </ListView>
 
-    <Button
-        android:id="@+id/button2"
+
+    <fragment
+        android:name="com.example.bgirac.badi.MapsActivity"
+        android:id="@+id/viewer"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="0.5"
-        android:onClick="startMap"
-        android:text="view Maps"
-        android:textSize="15dp" />
+        android:layout_height="200dp">
+
+        <ImageButton
+            android:id="@+id/imageButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            app:srcCompat="@android:drawable/arrow_up_float" />
+
+    </fragment>
+
+
 
 
 </LinearLayout>

@@ -95,7 +95,7 @@ public class BadiDetailActivity extends AppCompatActivity  implements OnMapReady
 
         getBadiTemp("http://www.wiewarm.ch/api/v1/bad.json/" + badiId);
         WetterKlasse wk = new WetterKlasse((ListView) findViewById(R.id.wetter), this, badiOrt, (TextView) findViewById(R.id.wetterText), (ImageView) findViewById(R.id.wetterImage));
-        wk.start();
+        wk.start(this);
 
         ListView badidetails = (ListView) findViewById(R.id.badidetails);
 
@@ -235,6 +235,9 @@ public class BadiDetailActivity extends AppCompatActivity  implements OnMapReady
             public void onClick(View view) {
                 FragmentManager fragmentManager = getSupportFragmentManager();
                 FullscreenDialogFragment newFragment = new FullscreenDialogFragment();
+                Bundle bundle = new Bundle();
+                bundle.putString("ort", badiOrt);
+                newFragment.setArguments(bundle);
                 FragmentTransaction transaction = fragmentManager.beginTransaction();
                 transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
                 transaction.add(android.R.id.content, newFragment).addToBackStack(null).commit();

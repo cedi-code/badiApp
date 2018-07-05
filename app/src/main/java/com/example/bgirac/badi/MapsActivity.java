@@ -7,12 +7,16 @@ import android.location.Location;
 import android.os.Build;
 import android.os.Looper;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -32,7 +36,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MapsActivity extends AppCompatActivity
+public class MapsActivity extends Fragment
         implements OnMapReadyCallback {
 
     GoogleMap mGoogleMap;
@@ -43,18 +47,35 @@ public class MapsActivity extends AppCompatActivity
     FusedLocationProviderClient mFusedLocationClient;
     public double reichweite = 10000;
 
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+
+
+        //getSupportActionBar().setTitle("Map Location Activity");
+
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(getActivity());
+
+        View view = inflater.inflate(R.layout.activity_maps, container, false);
+
+        //mapFrag = (SupportMapFragment)  getChildFragmentManager().findFragmentById(R.id.map);
+        //mapFrag.getMapAsync(this);
+
+        return view;
+    }
+
+    /**
+     * holt sich die GoogleMap Fragment damit einen Async task ausgeführt werden kann.
+     * (onResume wird aufgerufen, da das googlemap Fragment erst geladen werden muss)
+     */
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_maps);
+    public void onResume() {
+        super.onResume();
 
-       //getSupportActionBar().setTitle("Map Location Activity");
-
-        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-
-        mapFrag = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+        mapFrag = (SupportMapFragment)  getChildFragmentManager().findFragmentById(R.id.map);
         mapFrag.getMapAsync(this);
     }
+
+
 
     @Override
     public void onPause() {
@@ -66,6 +87,11 @@ public class MapsActivity extends AppCompatActivity
         }
     }
 
+    /**
+     * initzialisiert das Mapfragment (Google Map)
+     *
+     * @param googleMap
+     */
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mGoogleMap = googleMap;
@@ -76,8 +102,9 @@ public class MapsActivity extends AppCompatActivity
         mLocationRequest.setFastestInterval(120000);
         mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
 
+
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (ContextCompat.checkSelfPermission(this,
+            if (ContextCompat.checkSelfPermission(getActivity(),
                     Manifest.permission.ACCESS_FINE_LOCATION)
                     == PackageManager.PERMISSION_GRANTED) {
                 //Location Permission already granted
@@ -94,12 +121,15 @@ public class MapsActivity extends AppCompatActivity
         }
     }
 
+    /**
+     * Es holt sich die Aktuelle Position des Users
+     */
     LocationCallback mLocationCallback = new LocationCallback() {
         @Override
         public void onLocationResult(LocationResult locationResult) {
             List<Location> locationList = locationResult.getLocations();
             if (locationList.size() > 0) {
-                //The last location in the list is the newest
+
                 Location location = locationList.get(locationList.size() - 1);
                 Log.i("MapsActivityLocation", "Location: " + location.getLatitude() + " " + location.getLongitude());
                 mLastLocation = location;
@@ -108,23 +138,24 @@ public class MapsActivity extends AppCompatActivity
                 }
 
 
-                //Place current location marker
+                // holt Latiude und longitude vom aktuellen Standort
                 LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-                MarkerOptions markerOptions = new MarkerOptions();
-                markerOptions.position(latLng);
-                markerOptions.title("Current Position");
-                markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA));
-                mCurrLocationMarker = mGoogleMap.addMarker(markerOptions);
 
+                // findet Badi in der nähe
                 findeBadi(location);
-                //move map camera
+                // zoomet in die Map rein
                 mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 11));
             }
         }
     };
 
+    /**
+     * Such die nächste Badi und setzt einen Marker bei der Position
+     *
+     * @param location die Aktuelle Position des Users
+     */
     private void findeBadi( Location location) {
-        final ArrayList<ArrayList<String>> allBadis = BadiData.allBadis(getApplicationContext());
+        final ArrayList<ArrayList<String>> allBadis = BadiData.allBadis(getContext());
         double diferenzLat = 0.5;
         int diferenzLatPos = 0;
         double a = reichweite;
@@ -153,26 +184,30 @@ public class MapsActivity extends AppCompatActivity
         markerOptions2.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA));
         mCurrLocationMarker = mGoogleMap.addMarker(markerOptions2);
     }
+
+    /**
+     * überprüft ob das Gerät die bennötigten Berechtigungen hat.
+     */
     public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
     private void checkLocationPermission() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+        if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
 
             // Should we show an explanation?
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+            if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
                     Manifest.permission.ACCESS_FINE_LOCATION)) {
 
                 // Show an explanation to the user *asynchronously* -- don't block
                 // this thread waiting for the user's response! After the user
                 // sees the explanation, try again to request the permission.
-                new AlertDialog.Builder(this)
+                new AlertDialog.Builder(getActivity())
                         .setTitle("Location Permission Needed")
                         .setMessage("This app needs the Location permission, please accept to use location functionality")
                         .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 //Prompt the user once explanation has been shown
-                                ActivityCompat.requestPermissions(MapsActivity.this,
+                                ActivityCompat.requestPermissions(getActivity(),
                                         new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                                         MY_PERMISSIONS_REQUEST_LOCATION );
                             }
@@ -183,13 +218,20 @@ public class MapsActivity extends AppCompatActivity
 
             } else {
                 // No explanation needed, we can request the permission.
-                ActivityCompat.requestPermissions(this,
+                ActivityCompat.requestPermissions(getActivity(),
                         new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                         MY_PERMISSIONS_REQUEST_LOCATION );
             }
         }
     }
 
+    /**
+     * Fragt den User ob er Persmision erhalten kann
+     *
+     * @param requestCode welche Berechtigung man holen möchte
+     * @param permissions
+     * @param grantResults ob wir die Berechtigung erhalten haben
+     */
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            String permissions[], int[] grantResults) {
@@ -199,9 +241,7 @@ public class MapsActivity extends AppCompatActivity
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 
-                    // permission was granted, yay! Do the
-                    // location-related task you need to do.
-                    if (ContextCompat.checkSelfPermission(this,
+                    if (ContextCompat.checkSelfPermission(getActivity(),
                             Manifest.permission.ACCESS_FINE_LOCATION)
                             == PackageManager.PERMISSION_GRANTED) {
 
@@ -213,7 +253,7 @@ public class MapsActivity extends AppCompatActivity
 
                     // permission denied, boo! Disable the
                     // functionality that depends on this permission.
-                    Toast.makeText(this, "permission denied", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getActivity(), "permission denied", Toast.LENGTH_LONG).show();
                 }
                 return;
             }
