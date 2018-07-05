@@ -1,6 +1,8 @@
 package com.example.bgirac.badi;
 
 import android.Manifest;
+import android.animation.AnimatorInflater;
+import android.animation.StateListAnimator;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -10,13 +12,16 @@ import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.View;
 import android.widget.Adapter;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
@@ -75,7 +80,7 @@ public class BadiDetailActivity extends AppCompatActivity  implements OnMapReady
 
         // Enable the Up button
         ab.setDisplayHomeAsUpEnabled(true);
-
+        initCards();
 
  //       TextView txt = (TextView) findViewById(R.id.badiinfos);
 
@@ -202,5 +207,29 @@ public class BadiDetailActivity extends AppCompatActivity  implements OnMapReady
                 return resultList;
             }
         }.execute(url);
+    }
+    private void initCards() {
+        CardView card1 = (CardView) findViewById(R.id.card_view1);
+        CardView card2 = (CardView) findViewById(R.id.card_view2);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            StateListAnimator stateListAnimator = AnimatorInflater
+                    .loadStateListAnimator(getApplicationContext(), R.animator.lift_on_touch);
+            StateListAnimator stateListAnimator2 = AnimatorInflater
+                    .loadStateListAnimator(getApplicationContext(), R.animator.lift_on_touch);
+            card1.setStateListAnimator(stateListAnimator);
+            card2.setStateListAnimator(stateListAnimator2);
+        }
+        card2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
+        card1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
     }
 }

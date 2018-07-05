@@ -31,7 +31,11 @@
         card_view:cardCornerRadius="4dp"
         android:layout_marginVertical="5dp"
         android:layout_marginHorizontal="20dp"
-        android:elevation="5dp">
+        android:elevation="5dp"
+        android:stateListAnimator="@animator/lift_on_touch"
+        android:foreground="?attr/selectableItemBackground"
+        app:cardPreventCornerOverlap="false"
+        app:cardUseCompatPadding="true">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -63,6 +67,10 @@
         android:layout_marginVertical="5dp"
         android:layout_marginHorizontal="20dp"
         android:elevation="5dp"
+        android:stateListAnimator="@animator/lift_on_touch"
+        android:foreground="?attr/selectableItemBackground"
+        app:cardPreventCornerOverlap="false"
+        app:cardUseCompatPadding="true"
         >
         <!-- https://vickychijwani.me/cardview-material-response/ -->
         <LinearLayout
