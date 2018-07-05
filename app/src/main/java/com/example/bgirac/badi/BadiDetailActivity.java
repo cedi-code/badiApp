@@ -66,7 +66,8 @@ public class BadiDetailActivity extends AppCompatActivity  implements OnMapReady
         badiId = intent.getStringExtra("badi");
         badiData = intent.getStringArrayListExtra("badiData");
 
-
+        this.overridePendingTransition(R.animator.animation_enter,
+                R.animator.animation_leave);
 
         Toolbar myChildToolbar =
                 (Toolbar) findViewById(R.id.my_toolbar_filters);
