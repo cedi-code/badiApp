@@ -80,6 +80,7 @@ class WetterKlasse {
                     temps.addAll(wetter);
                     if(ls != null) {
                         ls.setAdapter(temps);
+
                     }else {
                         mDialog.dismiss();
 
