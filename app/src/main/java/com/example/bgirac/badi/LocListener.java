@@ -4,6 +4,9 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.os.Bundle;
 
+/**
+ * Dient zur speicherung der kordinaten
+ */
 public class LocListener implements LocationListener
 {
     private static double lat =0.0;

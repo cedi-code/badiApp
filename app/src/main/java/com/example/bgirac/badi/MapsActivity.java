@@ -51,12 +51,14 @@ public class MapsActivity extends Fragment
                              Bundle savedInstanceState) {
 
 
-        //getSupportActionBar().setTitle("Map Location Activity");
 
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(getActivity());
 
         View view = inflater.inflate(R.layout.activity_maps, container, false);
 
+        /**
+         * wir holen uns den Mapfragment später, da das Fragment "MapsActivity" wo das Mapfragment enthalten ist
+          */
         //mapFrag = (SupportMapFragment)  getChildFragmentManager().findFragmentById(R.id.map);
         //mapFrag.getMapAsync(this);
 
@@ -102,6 +104,9 @@ public class MapsActivity extends Fragment
         mLocationRequest.setFastestInterval(120000);
         mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
 
+        /**
+         * Überprüft ob die SDK version grösser als Marshmellow ist, wenn ja gelten die abfragung der "Dangerous permissions"
+         */
 
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (ContextCompat.checkSelfPermission(getActivity(),

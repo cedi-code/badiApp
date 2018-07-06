@@ -49,7 +49,7 @@ public class MainActivity extends AppCompatActivity  implements OnMapReadyCallba
     private final static String ADELBODEN = "Schwimmbad Gruebi Adelboden (BE)";
     private final static String BERN = "Stadberner Baeder Bern (BE)";
     private static final int MY_REQUEST_INT = 123;
-    private ArrayList<String> activeFilters = new ArrayList<>();
+    private String activeFilters = "";
     private ListView badis;
     private String filter = "";
 
@@ -58,31 +58,37 @@ public class MainActivity extends AppCompatActivity  implements OnMapReadyCallba
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // holt sich die Toolbar
         Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
         setSupportActionBar(myToolbar);
+
         Intent intent = getIntent();
 
-        // TODO remove filter!!!
+        // überpüft ob man schon einmal nach einem Kanton gefiltert hat
         if (intent.hasExtra("kanton")) {
-            if (!activeFilters.contains(intent.getStringExtra("kanton"))) {
-                activeFilters.add(intent.getStringExtra("kanton"));
-            }
+            activeFilters = intent.getStringExtra("kanton");
         }
+
+
+        // initzialisiert componentete
         init();
 
 
     }
 
 
-
+    /**
+     * initzialisiert die Badis
+     */
     private void init() {
-        //ImageView img = (ImageView) findViewById(R.id.badilogo);
-        //img.setImageResource(R.mipmap.ic_launcher);
+
+        // fügt alle badis hinzu
         addBadisToList();
 
 
-        // intent.putExtra("badi","71");
 
+        // fügt der List view Onclick und leitet sie zu BadiDetail weiter
         AdapterView.OnItemClickListener mListClickedHandler = new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -94,46 +100,64 @@ public class MainActivity extends AppCompatActivity  implements OnMapReadyCallba
                 for (ArrayList<String> b : allBadis) {
                     badii = b.get(5) + "-" + b.get(8);
                     if (badii.equals(selected)) {
+                        // übergibt im Extra noch die benötigten badidaten
                         intent.putExtra("badi", b.get(0));
                         intent.putStringArrayListExtra("badiData", b);
                     }
 
 
                 }
-                //intent.putExtra("name", selected);
+                // die BadiDetail Activity wird gestartet
                 startActivity(intent);
 
             }
         };
         badis.setOnItemClickListener(mListClickedHandler);
-        // badis.setOnScrollListener(scroller);
+
 
     }
 
-    public void startMap(View v) {
-        Intent intent = new Intent(getApplicationContext(), MapsActivity.class);
-        startActivity(intent);
-    }
+
+    /**
+     * Badis werden zur ListView hinzugefügt, dabei wird auch überprüft ob der Benutzer Filter oder nicht
+     */
     private void addBadisToList() {
+
+        // holt sich die Badis von der csv datei
         final ArrayList<ArrayList<String>> allBadis = BadiData.allBadis(getApplicationContext());
+
         badis = (ListView) findViewById(R.id.badiliste);
         badiliste = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1);
 
+
+        // intent von Filtern kantone
         Intent intent = getIntent();
+
 
         for (ArrayList<String> b : allBadis) {
 
             if (intent.hasExtra("kanton")) {
-                for (String k : activeFilters) {
-                    if (b.get(6).equals(k)) {
-                        badiliste.add(b.get(5) + "-" + b.get(8));
-                    }
-                }
+                // für jeden aktiven filter (funktioniert noch nicht richtig)
 
-            } else if ((b.get(5).toLowerCase().contains(filter.toLowerCase()) ||
+                    // suche, aber mit dem Aktiven filter der Kantone
+                    if (b.get(6).equals(activeFilters)) {
+                        if ((b.get(5).toLowerCase().contains(filter.toLowerCase()) ||
+                                b.get(8).toLowerCase().contains(filter.toLowerCase()))) {
+                            badiliste.add(b.get(5) + "-" + b.get(8));
+                        }
+                    }
+
+
+            }
+
+
+            if ((b.get(5).toLowerCase().contains(filter.toLowerCase()) ||
                     b.get(8).toLowerCase().contains(filter.toLowerCase()))) {
+
+                // suche ohne Filter
                 badiliste.add(b.get(5) + "-" + b.get(8));
             }
+
 
 
         }
@@ -141,12 +165,14 @@ public class MainActivity extends AppCompatActivity  implements OnMapReadyCallba
         badis.setAdapter(badiliste);
     }
 
+
+    // inizialisiert die Google Map da die Main Activity
     @Override
     public void onMapReady(GoogleMap googleMap) {
         GoogleMap mMap = googleMap;
 
 
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+ /*       if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
             //    ActivityCompat#requestPermissions
             // here to request the missing permissions, and then overriding
@@ -162,7 +188,7 @@ public class MainActivity extends AppCompatActivity  implements OnMapReadyCallba
             return;
         }else {
             mMap.setMyLocationEnabled(true);
-        }
+        } */
 
 
 

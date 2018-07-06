@@ -37,6 +37,11 @@ public class FullscreenDialogFragment extends DialogFragment {
 
     }
 
+    /**
+     * Wenn das Fragment erstellt wird, hollt man sich mit dem Bundle einen Parameter (der Ort) damit man weiss, welche Daten geladen werden müssen
+     * @param view
+     * @param savedInstanceState
+     */
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
