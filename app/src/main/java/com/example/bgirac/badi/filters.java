@@ -53,7 +53,7 @@ public class filters extends AppCompatActivity {
      *
      * @param kantoneView die Liste wo alle Kantone aufgelistet werden
      */
-    private void addKantonsliste(ListView kantoneView) {
+    public void addKantonsliste(ListView kantoneView) {
 
         final ArrayList<ArrayList<String>> kantone = BadiData.allKantone(getApplicationContext());
         ArrayAdapter<String> kantonsListe = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1);

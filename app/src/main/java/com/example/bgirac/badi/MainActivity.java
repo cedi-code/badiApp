@@ -121,7 +121,7 @@ public class MainActivity extends AppCompatActivity  implements OnMapReadyCallba
     /**
      * Badis werden zur ListView hinzugefügt, dabei wird auch überprüft ob der Benutzer Filter oder nicht
      */
-    private void addBadisToList() {
+    public void addBadisToList() {
 
         // holt sich die Badis von der csv datei
         final ArrayList<ArrayList<String>> allBadis = BadiData.allBadis(getApplicationContext());

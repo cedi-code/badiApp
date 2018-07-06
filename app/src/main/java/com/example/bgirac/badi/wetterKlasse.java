@@ -71,7 +71,7 @@ class WetterKlasse {
      * @param c     Context um eine referenz auf die Activity zu haben
      */
     public void getWetter(String url,final ListView ls, Context c ){
-        final ArrayAdapter temps= new ArrayAdapter<String>(c, android.R.layout.simple_list_item_1);
+        final ArrayAdapter temps = new ArrayAdapter<String>(c, android.R.layout.simple_list_item_1);
 
         new AsyncTask<String,String,String>(){
             @Override protected String doInBackground(String[] wetter){
@@ -150,6 +150,8 @@ class WetterKlasse {
 
             /**
              *
+             *
+             *
              * @param jonString         in diesem parameter befindet sich dann der inhalt der result variable in der oberen Methode
              * @return                  gibt die WetterDaten zurück
              * @throws JSONException    braucht eine JSONExeption throw decleration, denn die aktion könnte schief gehen
@@ -189,3 +191,8 @@ class WetterKlasse {
         }.execute(url);
     }
 }
+
+
+
+
+
