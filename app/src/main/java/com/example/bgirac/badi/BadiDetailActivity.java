@@ -69,7 +69,6 @@ public class BadiDetailActivity extends AppCompatActivity  implements OnMapReady
     public ArrayList<String> badiData;
     private ProgressDialog mDialog;
     ArrayAdapter badiliste;
-
     private GoogleMap mMap;
 
     @Override
@@ -94,26 +93,19 @@ public class BadiDetailActivity extends AppCompatActivity  implements OnMapReady
         // Get a support ActionBar corresponding to this toolbar
         ActionBar ab = getSupportActionBar();
 
-        // Enable the Up button
+        /**
+         * Den Up button 'enablen'
+         */
         ab.setDisplayHomeAsUpEnabled(true);
         initCards();
 
- //       TextView txt = (TextView) findViewById(R.id.badiinfos);
-
-//        txt.setText(badiData.get(5) + "-" + badiData.get(8));
-
-
+        /**
+         * Hier werden die wetterdaten / badidaten angezeigt
+         */
         mDialog = ProgressDialog.show(this, "Lade Badi-Infos", "bitte warten...(*￣з￣)");
         getBadiTemp("http://www.wiewarm.ch/api/v1/bad.json/" + badiId);
-        WetterKlasse wk = new WetterKlasse(this, badiOrt, (TextView) findViewById(R.id.wetterText), (ImageView) findViewById(R.id.wetterImage),BadiDetailActivity.this, getIntent());
+        WetterKlasse wk = new WetterKlasse(this, badiOrt, (TextView) findViewById(R.id.wetterText), (ImageView) findViewById(R.id.wetterImage));
         wk.start(this);
-
-
-
-
-
-
-
 
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
@@ -124,7 +116,11 @@ public class BadiDetailActivity extends AppCompatActivity  implements OnMapReady
     }
 
 
-
+    /**
+     * Hier wird der ort der Badi auf einer Google map angezeigt
+     *
+     * @param googleMap
+     */
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
@@ -135,34 +131,43 @@ public class BadiDetailActivity extends AppCompatActivity  implements OnMapReady
         double v = 0;
         double v1 = 0;
 
+        /**
+         * es wird die badi nach ID gesucht und im CSV file die koordinaten geholt
+         */
         for (ArrayList<String> b : allBadis) {
             if (badiId.equals(b.get(0))) {
-                v = Double.parseDouble(b.get(10));
-                v1 = Double.parseDouble(b.get(11));
+                v = Double.parseDouble(b.get(10)); // latitude - breitengrad
+                v1 = Double.parseDouble(b.get(11)); // longitude - längengrad
                 break;
             }
         }
 
-        // -- Position von der Badi -- //
+        /**
+         * Position der Badi
+         */
         LatLng ort = new LatLng(v, v1);
 
-        // Add a marker in Sydney and move the camera
+        /**
+         * Hier wird ein PinStecker hinzugefügt welcher direkt auf dem ort der Badi ist
+         */
         mMap.addMarker(new MarkerOptions().position(ort).title("Ort"));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(ort));
 
-        CameraPosition cameraPosition = new CameraPosition.Builder()
-                .target(ort)     // Sets the center of the map to location user
-                .zoom(14)                   // Sets the zoom
-                .build();                   // Creates a CameraPosition from the builder
+        /**
+         * hier wird die Camera perspektive auf die Badi gerichtet und hineingezoomed
+         */
+        CameraPosition cameraPosition = new CameraPosition.Builder().target(ort).zoom(14).build();
         mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
 
-        // -- Position vom Smarphone -- //
+        /**
+         * live position vom Benutzer (mit GPS daten des Smartphones)
+         */
         LatLng myPos = new LatLng(ll.getLat(), ll.getLon());
         mMap.addMarker(new MarkerOptions().position(myPos).title("MyPos"));
     }
 
     /**
-     * Vergrössert die Map
+     * Vergrössert die Map auf dem Bildschirm
      *
      * @param v immageButton
      */
@@ -210,6 +215,12 @@ public class BadiDetailActivity extends AppCompatActivity  implements OnMapReady
         card.requestLayout();
     }
 
+    /**
+     * Hier werden alle Badi daten geholt und angezeigt
+     * (geleiche funktionalität wie bei der WetterKlasse)
+     *
+     * @param url   die url braucht es um bei der webseite die Json datei zu holen mit den wetterdaten
+     */
     private void getBadiTemp(String url) {
         final ArrayAdapter temps = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1);
 
@@ -218,17 +229,10 @@ public class BadiDetailActivity extends AppCompatActivity  implements OnMapReady
                 String msq= "";
                 try {
                     URL url = new URL(badi[0]);
-                        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-
-
+                    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                     // webseite antwort lesen
                     int code = conn.getResponseCode();
-
-
-
                     msq = IOUtils.toString(conn.getInputStream());
-
-
                     Log.i(TAG, Integer.toString(code));
 
                 }catch(Exception e) {
@@ -243,16 +247,9 @@ public class BadiDetailActivity extends AppCompatActivity  implements OnMapReady
             public void onPostExecute(String result) {
                 try {
                     List<String> badiInfos = parseBadiTemp(result);
-
-                    //ListView badidetails = (ListView) findViewById(R.id.badidetails);
                     TextView badiText = (TextView) findViewById(R.id.badiText);
                     badiText.setText(badiInfos.get(0));
                     mDialog.dismiss();
-                    /*temps.addAll(badiInfos);
-                    temps.add("typ: " + badiData.get(9));
-                    temps.add("Adresse: " + badiData.get(12));
-
-                    badidetails.setAdapter(temps); */
 
                 }catch (JSONException e) {
                     Log.v(TAG, e.toString());
@@ -307,6 +304,10 @@ public class BadiDetailActivity extends AppCompatActivity  implements OnMapReady
             }
         });
     }
+
+    /**
+     * Hier befinden sich die onclick events der cardviews
+     */
     private void initCards() {
         CardView card1 = (CardView) findViewById(R.id.card_view1);
         CardView card2 = (CardView) findViewById(R.id.card_view2);
@@ -324,6 +325,9 @@ public class BadiDetailActivity extends AppCompatActivity  implements OnMapReady
 
             }
         });
+        /**
+         * beim Onclick werden genauere wetterdaten mit einem Popup angezeigt (im FullscreenDialogFragment)
+         */
         card1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -335,7 +339,6 @@ public class BadiDetailActivity extends AppCompatActivity  implements OnMapReady
                 FragmentTransaction transaction = fragmentManager.beginTransaction();
                 transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
                 transaction.add(android.R.id.content, newFragment).addToBackStack(null).commit();
-
             }
         });
     }

@@ -27,35 +27,49 @@ import java.util.List;
 class WetterKlasse {
     private  static String TAG="Wetterprognose";
     private String ort;
-    private String badiId;
-    private String name;
     private ProgressDialog mDialog;
-    private String wetterArt;
     private Context ct;
     private TextView wetterText;
     private ImageView wetterBild;
-    private BadiDetailActivity mActivity;
-    private Intent mIntent;
 
-
-
-    public WetterKlasse(Context ct, String ort, TextView txt, ImageView img, BadiDetailActivity mActivity, Intent intent) {
+    /**
+     *
+     *
+     * @param ct        braucht einen Context um auf eine Activity zu referenzieren
+     * @param ort       braucht den Ort um zu wissen von wo das wetter angezeigt werden soll
+     * @param txt       das textview um das wetter anzuzeigen
+     * @param img       das imageview um das richtige Icon zum aktuellen wetter anzuzeigen
+     */
+    public WetterKlasse(Context ct, String ort, TextView txt, ImageView img) {
         this.ct = ct;
         this.ort = ort;
-        mIntent = intent;
         wetterText = txt;
         wetterBild = img;
-        this.mActivity = mActivity;
-    }
-    public WetterKlasse() {
-
     }
 
+    /**
+     * Ein leerer Konstruktor um ohne parameter aufrufen zu können
+     * (wird z.b beim FullscreenDialogFragment gebraucht)
+     */
+    public WetterKlasse() { }
+
+    /**
+     * in dieser methode wird die getWetter Methode aufgerufen und vorher noch einen Processdialog
+     * um auf die gewünschten ergebnisse zu warten
+     */
     public void start(Context c) {
         mDialog= ProgressDialog.show(ct, "Lade Wetterprognose","Bitte warten...");
         getWetter("https://openweathermap.org/data/2.5/weather?q="+ort+",CH&appid=b6907d289e10d714a6e88b30761fae22", null, c);
     }
 
+    /**
+     * Diese Methode holt die WetterInformationen zur aktuellen zeit am gewünschten ort
+     * ausserdem werden die wetterdaten direkt in die ListView und TextView eingefüllt
+     *
+     * @param url   Die url bracht es um die Json datei aus der webseite zu bekommen
+     * @param ls    um die Wetterdaten in die listview zu füllen
+     * @param c     Context um eine referenz auf die Activity zu haben
+     */
     public void getWetter(String url,final ListView ls, Context c ){
         final ArrayAdapter temps= new ArrayAdapter<String>(c, android.R.layout.simple_list_item_1);
 
@@ -84,12 +98,21 @@ class WetterKlasse {
                     List<String> wetter = parseWetterprognose(result);
                     temps.addAll(wetter);
                     if(ls != null) {
+                        /**
+                         * füllt die daten ins Popup
+                         */
                         ls.setAdapter(temps);
-
                     }else {
+                        /**
+                         * füllt die daten cardview
+                         */
                         mDialog.dismiss();
 
                         wetterText.setText(wetter.get(0));
+
+                        /**
+                         * if else anweisung um das richtige ICON zum wetter zu finden
+                         */
 
                         int id = Integer.parseInt(wetter.get(3));
                         if (id <= 232 & id >= 200) {
@@ -124,6 +147,13 @@ class WetterKlasse {
                 }
 
             }
+
+            /**
+             *
+             * @param jonString         in diesem parameter befindet sich dann der inhalt der result variable in der oberen Methode
+             * @return                  gibt die WetterDaten zurück
+             * @throws JSONException    braucht eine JSONExeption throw decleration, denn die aktion könnte schief gehen
+             */
             private List parseWetterprognose(String jonString)throws JSONException{
                 ArrayList<String> resultList = new ArrayList<String>();
                 JSONObject jsonObject = new JSONObject(jonString);
@@ -157,32 +187,5 @@ class WetterKlasse {
             }
 
         }.execute(url);
-    }
-
-
-    /**
-     * Zeigt dem User ein popup an, das er keine Verbindung hat
-     */
-    private void errorConn() {
-
-        mActivity.runOnUiThread(new Runnable() {
-            public void run() {
-                AlertDialog alertDialog = new AlertDialog.Builder(mActivity).create();
-                alertDialog.setTitle("Error");
-                alertDialog.setMessage("Es konnte keine Verbindung hergestellt werden");
-                alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "erneut versuchen",
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-                                mActivity.finish();
-                                // getIntent().setFlags(getIntent().FLAG_ACTIVITY_NEW_TASK | getIntent().FLAG_ACTIVITY_CLEAR_TASK);
-                                mActivity.startActivity(mIntent);
-
-
-                            }
-                        });
-                alertDialog.show();
-            }
-        });
     }
 }
